@@ -45,7 +45,7 @@ function AdhanTimesShow() {
 
 #trigger at every midnight to refresh times.
 function refreshTimes(){
-	(crontab -l ; echo "0 0 * * * bin/bash /home/sonos_adhan.sh -refresh") | crontab
+	(crontab -l ; echo "0 0 * * * bin/bash /home/sonos_adhan.sh -install") | crontab
 }
 
 function AdhanPlay(){
