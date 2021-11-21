@@ -43,6 +43,8 @@ docker run -e pushover_notifications=true -e app_token=kjdnckndmvmfpmvfvmomfmfdm
 "testsonos" to check that the container can play azan correctly.
 "testpushover" is to check if pushover is working correctly
 
+The rest of the configs (env variables) can be seen below: 
+
 | Config                     | Meaning                                                                                                                     |
 |----------------------------|-----------------------------------------------------------------------------------------------------------------------------|
 | pushover_notifications     | true/false. Set if pushover is active.                                                                                      |
