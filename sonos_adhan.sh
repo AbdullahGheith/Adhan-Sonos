@@ -26,6 +26,18 @@ function AdhanTimes() {
 			cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab
 			#create array message for push
 			message+=($i" "$pray)
+			
+			if [ $adhan_preannounce_minutes -gt 0 ] 
+				then
+					command="/bin/bash /home/sonos_adhan.sh -preannounce; crontab -l | grep -v DELETEMEPRE-${i,} | crontab"
+					newTime=$(date --date "${pray:0:2}:${pray:3:4}:30 $(date +"%Z")  -$adhan_preannounce_minutes min")
+					newMin=$(date --date="$newTime" '+%M')
+					newHour=$(date --date="$newTime" '+%H')
+					prejob="$newMin $newHour * * * $command"
+					
+					cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$prejob") | crontab
+			fi
+			
 		done
 }
 #get prayer times based on location from config file via API aladhan.com
@@ -45,7 +57,59 @@ function AdhanTimesShow() {
 
 #trigger at every midnight to refresh times.
 function refreshTimes(){
-	(crontab -l ; echo "0 0 * * * bin/bash /home/sonos_adhan.sh -install") | crontab
+	(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install") | crontab
+}
+
+function adhanPrenounce(){
+	if [[ "$(date +%H)" > $adhan_time_day ]]
+		then
+			newvol=$adhan_volume_day
+		else
+			newvol=$adhan_volume_night
+	fi
+	
+	sonosSay $adhan_preannounce_text $newvol
+}
+
+function sonosPlayAdhan(){
+	curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$1"
+}
+
+function sonosSay(){
+	#replace space by url friendly space
+	adhan_preannounce_text_format=${1// /%20}
+	curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$2"
+	curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$2"
+}
+
+function getVolume() {
+	if [[ "$(date +%H)" > $adhan_time_day ]]
+		then
+			eval $1=$adhan_volume_day
+		else
+			eval $1=$adhan_volume_night
+		fi
+}
+
+function AdhanPreannounce() {
+#check is adhan is active
+	if [[ $active = true ]]
+		then 
+		
+		#check current hour for volume
+		getVolume newvol
+		
+		if [[ $adhan_preannounce = true ]]
+			then 
+			sonosSay $adhan_preannounce_text $newvol
+		fi
+		
+	fi
+	#send notification
+	if [[ $salah_notification_salah = true ]]
+		then 
+			AdhanPush "Salah" "Preannounce salah $newvol"
+	fi
 }
 
 function AdhanPlay(){
@@ -54,35 +118,24 @@ function AdhanPlay(){
 		then 
 		
 		#check current hour for volume
-		if [[ "$(date +%H)" > $adhan_time_day ]]
-		then
-			if [[ $adhan_preannounce = true ]]
-				then 
-					#replace space by url friendly space
-					adhan_preannounce_text_format=${adhan_preannounce_text// /%20}
-					curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$adhan_volume_day"
-					curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$adhan_volume_day"
-			else
-					curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$adhan_volume_day"
-			fi
-
-		#if it's night
-		else
-			if [[ $adhan_preannounce = true ]]
-				then 
-					#replace space by url friendly space
-					adhan_preannounce_text_format=${adhan_preannounce_text// /%20}
-					curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$adhan_volume_night"
-					curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$adhan_volume_night"
-			else
-					curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$adhan_volume_night"
+		getVolume newvol
+		
+		if [[ $adhan_preannounce = true ]]
+			then 
+			#if minutes delay = 0, then say preannouncement. Anything greater than that is scheduled for cron
+			if [$adhan_preannounce_minutes -eq 0]
+				then
+				sonosSay $adhan_preannounce_text $newvol
 			fi
 		fi
+		
+		sonosPlayAdhan $newvol
+			
 	fi
 	#send notification
 	if [[ $salah_notification_salah = true ]]
 		then 
-			AdhanPush "Salah" "It's time to pray"
+			AdhanPush "Salah" "It's time to pray $newvol"
 	fi
 }
 #install adhan time from api
@@ -95,6 +148,8 @@ elif [[ $1 == -times ]];then
 #play the adhan
 elif [[ $1 == -adhan ]];then	
 		AdhanPlay
+elif [[ $1 == -preannounce ]];then	
+		AdhanPreannounce
 elif [[ $1 == -pushover ]];then	
 		AdhanPush "SonosAdhan" "Testsuccessful"
 		printf "Notification sent"
