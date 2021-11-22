@@ -8,6 +8,7 @@ elif [[ $1 == "testsonos" ]];then
 elif [[ $1 == "testpushover" ]];then 
 		source /home/sonos_adhan.sh -pushover
 else
+		service cron start
 		source /home/sonos_adhan.sh -install
 		cd /home/node-sonos-http-api && npm start
 fi
