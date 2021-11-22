@@ -20,6 +20,4 @@ RUN npm install --production
 
 WORKDIR /home
 
-RUN ./sonos_adhan.sh -install
-
 ENTRYPOINT ["/home/starter.sh"]
