@@ -5,7 +5,6 @@ RUN apt-get -qq install nano
 RUN apt-get -qq install git
 RUN apt-get -qq install jq
 RUN apt-get -qq install cron
-RUN service cron start
 
 COPY sonos_adhan.sh sonos_adhan.cfg starter.sh /home/
 RUN chmod +x /home/sonos_adhan.sh 
