@@ -72,14 +72,27 @@ function adhanPrenounce(){
 }
 
 function sonosPlayAdhan(){
-	curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$1"
+	if [ $speaker = "chromecast" ] 
+		then
+		go-chromecast load http://"$hostip":6006/azan.mp3 -a "$chromecastip" 2>&1 &
+	else
+		curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$1"
+	fi
+	
 }
 
 function sonosSay(){
-	#replace space by url friendly space
-	adhan_preannounce_text_format=${1// /%20}
-	curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$2"
-	curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$2"
+	if [ $speaker = "chromecast" ] 
+		then
+			gtts-cli "$1" -t dk -l da --output /home/node-sonos-http-api/static/clips/tts.mp3
+			go-chromecast load http://"$hostip":6006/tts.mp3 -a "$chromecastip" 2>&1 &
+		else
+		#replace space by url friendly space
+		adhan_preannounce_text_format=${1// /%20}
+		curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$2"
+		curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$2"
+	fi
+	
 }
 
 function getVolume() {
