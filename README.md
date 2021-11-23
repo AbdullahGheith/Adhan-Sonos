@@ -1,4 +1,4 @@
- #Current status: NOT WORKING - cron jobs are not executing inside the docker for some reason
+ # Current status: NOT WORKING - cron jobs are not executing inside the docker for some reason
  # sonos_adhan_docker
 
 This is originally a script made by joohan: https://github.com/joohann/Adhan-Sonos
