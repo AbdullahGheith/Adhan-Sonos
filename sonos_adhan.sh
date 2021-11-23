@@ -60,17 +60,6 @@ function refreshTimes(){
 	(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install") | crontab
 }
 
-function adhanPrenounce(){
-	if [[ "$(date +%H)" > $adhan_time_day ]]
-		then
-			newvol=$adhan_volume_day
-		else
-			newvol=$adhan_volume_night
-	fi
-	
-	sonosSay $adhan_preannounce_text $newvol
-}
-
 function sonosPlayAdhan(){
 	if [ $speaker = "chromecast" ] 
 		then
