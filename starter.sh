@@ -8,6 +8,10 @@ elif [[ $1 == "testsonos" ]];then
 elif [[ $1 == "testpushover" ]];then 
 		source /home/sonos_adhan.sh -pushover
 else
+		if [ $speaker = "chromecast" ] 
+		then
+			http-server /home/node-sonos-http-api/static/clips -p 6006 > http.log 2>&1 &
+		fi
 		service cron start
 		source /home/sonos_adhan.sh -install
 		cd /home/node-sonos-http-api && npm start
