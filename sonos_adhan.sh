@@ -21,21 +21,23 @@ function AdhanTimes() {
 		do	
 			#get the times from api
 			pray=$(jq -r  '.data.timings.'$i <<< "${url}" ) 
-			command="/bin/bash /home/sonos_adhan.sh -adhan; crontab -l | grep -v DELETEME-${i,} | crontab"
+			command="root /bin/bash /home/sonos_adhan.sh -adhan; cat /etc/cron.d/azancron | grep -v DELETEME-${i,} > /etc/cron.d/azancron.temp; cat /etc/cron.d/azancron.temp > /etc/cron.d/azancron"
 			job="${pray:3:4} ${pray:0:2} * * * $command"
-			cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab
+			echo "$job" >> /etc/cron.d/azancron
+			#cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab
 			#create array message for push
 			message+=($i" "$pray)
 			
 			if [ $adhan_preannounce_minutes -gt 0 ] 
 				then
-					command="/bin/bash /home/sonos_adhan.sh -preannounce; crontab -l | grep -v DELETEMEPRE-${i,} | crontab"
+					command="root /bin/bash /home/sonos_adhan.sh -preannounce; cat /etc/cron.d/azancron | grep -v DELETEMEPRE-${i,} > /etc/cron.d/azancron.temp; cat /etc/cron.d/azancron.temp > /etc/cron.d/azancron"
 					newTime=$(date --date "${pray:0:2}:${pray:3:4}:30 $(date +"%Z")  -$adhan_preannounce_minutes min")
 					newMin=$(date --date="$newTime" '+%M')
 					newHour=$(date --date="$newTime" '+%H')
 					prejob="$newMin $newHour * * * $command"
 					
-					cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$prejob") | crontab
+					echo "$prejob" >> /etc/cron.d/azancron
+					#cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$prejob") | crontab
 			fi
 			
 		done
@@ -57,7 +59,8 @@ function AdhanTimesShow() {
 
 #trigger at every midnight to refresh times.
 function refreshTimes(){
-	(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install") | crontab
+	echo -e "BASH_ENV=/home/container.env\n\n0 0 * * * root /bin/bash /home/sonos_adhan.sh -install\n" > /etc/cron.d/azancron
+	#(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install" ) | crontab
 }
 
 function sonosPlayAdhan(){
@@ -125,7 +128,7 @@ function AdhanPlay(){
 		if [[ $adhan_preannounce = true ]]
 			then 
 			#if minutes delay = 0, then say preannouncement. Anything greater than that is scheduled for cron
-			if [$adhan_preannounce_minutes -eq 0]
+			if [ $adhan_preannounce_minutes -eq 0 ]
 				then
 				sonosSay $adhan_preannounce_text $newvol
 			fi
@@ -142,14 +145,14 @@ function AdhanPlay(){
 }
 #install adhan time from api
 if [[ $1 == -install ]];then 
-		crontab -r
-		AdhanTimes
 		refreshTimes
+		AdhanTimes
 elif [[ $1 == -times ]];then 
 		AdhanTimesShow
 #play the adhan
 elif [[ $1 == -adhan ]];then	
 		AdhanPlay
+		sleep 1m
 elif [[ $1 == -preannounce ]];then	
 		AdhanPreannounce
 elif [[ $1 == -pushover ]];then	
