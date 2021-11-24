@@ -57,6 +57,7 @@ The rest of the configs (env variables) can be seen below:
 | app_token                  | Used for pushover.net. Can send notifications to your phone when its salah time                                             |
 | user_token                 | Used for pushover.net. Can send notifications to your phone when its salah time                                             |
 | salah_notification_install | Get notification from pushover when this container is running                                                               |
+| salah_notification_salah   | Get notification from pushover when salah time is in                                                                        |
 | active                     | true/false value. Determines if adhan should be played through sonos speakers.                                              |
 | city                       | City to use for azan. More info: https://aladhan.com/prayer-times-api - Scroll down to the TimingsByCity endpoint           |
 | country                    | Country to use for azan. More info: https://aladhan.com/prayer-times-api - Scroll down to the TimingsByCity endpoint        |
@@ -68,6 +69,5 @@ The rest of the configs (env variables) can be seen below:
 | adhan_volume_night         | Volume through "night"                                                                                                      |
 | adhan_preannounce          | Preannounce adhan before it starts                                                                                          |
 | adhan_preannounce_text     | What the speakers will say to preannounce adhan                                                                             |
-| adhan_preannounce_minutes  | Integer value. How many minutes before adhan to remind you about current salah time is ending.                              |
 
 **Notice that there are no default settings, so all settings must be provided**
