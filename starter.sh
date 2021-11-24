@@ -10,6 +10,7 @@ elif [[ $1 == "testpushover" ]];then
 else
 		if [ $speaker = "chromecast" ] 
 		then
+			declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /home/container.env
 			http-server /home/node-sonos-http-api/static/clips -p 6006 > http.log 2>&1 &
 		fi
 		service cron start
