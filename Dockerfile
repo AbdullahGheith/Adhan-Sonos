@@ -23,6 +23,10 @@ WORKDIR /home/node-sonos-http-api
 RUN npm install --production
 RUN npm install http-server -g
 
+RUN touch /etc/cron.d/azancron
+RUN chmod 0644 /etc/cron.d/azancron
+RUN crontab /etc/cron.d/azancron
+
 WORKDIR /home
 
 ENTRYPOINT ["/home/starter.sh"]
