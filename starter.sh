@@ -8,6 +8,7 @@ elif [[ $1 == "testsonos" ]];then
 elif [[ $1 == "testpushover" ]];then 
 		source /home/sonos_adhan.sh -pushover
 else
+		ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 		if [ $speaker = "chromecast" ] 
 		then
 			declare -p | grep -Ev 'BASHOPTS|BASH_VERSINFO|EUID|PPID|SHELLOPTS|UID' > /home/container.env
