@@ -1,4 +1,4 @@
- # sonos_adhan_docker
+ # sonos_adhan_chromecast_docker
 
 This is originally a script made by joohan: https://github.com/joohann/Adhan-Sonos
 
