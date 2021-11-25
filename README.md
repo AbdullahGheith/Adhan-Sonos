@@ -2,7 +2,7 @@
 
 This is originally a script made by joohan: https://github.com/joohann/Adhan-Sonos
 
-I fixed it and made it into a docker container for easier setup.
+I fixed it and made it into a docker container for easier setup. Just start the docker container and it will work!
 
 # build
 
