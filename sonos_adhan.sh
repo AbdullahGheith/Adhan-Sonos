@@ -66,6 +66,7 @@ function refreshTimes(){
 function sonosPlayAdhan(){
 	if [ $speaker = "chromecast" ] 
 		then
+		go-chromecast volume "0.$1" -a "$chromecastip" 2>&1 &
 		go-chromecast load http://"$hostip":6006/azan.mp3 -a "$chromecastip" 2>&1 &
 	else
 		curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$1"
@@ -76,6 +77,7 @@ function sonosPlayAdhan(){
 function sonosSay(){
 	if [ $speaker = "chromecast" ] 
 		then
+			go-chromecast volume "0.$2" -a "$chromecastip" 2>&1 &
 			gtts-cli "$1" -t dk -l da --output /home/node-sonos-http-api/static/clips/tts.mp3
 			go-chromecast load http://"$hostip":6006/tts.mp3 -a "$chromecastip" 2>&1 &
 		else
@@ -106,7 +108,7 @@ function AdhanPreannounce() {
 		
 		if [[ $adhan_preannounce = true ]]
 			then 
-			sonosSay $adhan_preannounce_text $newvol
+			sonosSay "$adhan_preannounce_text" $newvol
 		fi
 		
 	fi
@@ -130,7 +132,7 @@ function AdhanPlay(){
 			#if minutes delay = 0, then say preannouncement. Anything greater than that is scheduled for cron
 			if [ $adhan_preannounce_minutes -eq 0 ]
 				then
-				sonosSay $adhan_preannounce_text $newvol
+				sonosSay "$adhan_preannounce_text" $newvol
 			fi
 		fi
 		
