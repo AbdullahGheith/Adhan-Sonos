@@ -5,9 +5,11 @@
 #send push notification with pushover
 function AdhanPush() {
 	if [[ $pushover_notifications = true ]]
-		then	
+		then
+			echo $user_token | sed -n 1'p' | tr ',' '\n' | while read word; do
 			#get data from config file
-			 wget https://api.pushover.net/1/messages.json --post-data="token=$app_token&user=$user_token&message=$2&title=$1" -q
+				wget https://api.pushover.net/1/messages.json --post-data="token=$app_token&user=$word&message=$2&title=$1" -q
+			done
 	fi
 }
 #get prayer times based on location from config file via API aladhan.com
