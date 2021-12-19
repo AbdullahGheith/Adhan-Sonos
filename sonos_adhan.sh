@@ -21,22 +21,20 @@ function AdhanTimes() {
 		do	
 			#get the times from api
 			pray=$(jq -r  '.data.timings.'$i <<< "${url}" ) 
-			command="root /bin/bash /home/sonos_adhan.sh -adhan; cat /etc/cron.d/azancron | grep -v DELETEME-${i,} > /etc/cron.d/azancron.temp; cat /etc/cron.d/azancron.temp > /etc/cron.d/azancron"
-			job="${pray:3:4} ${pray:0:2} * * * $command"
-			echo "$job" >> /etc/cron.d/azancron
+			command="root /bin/bash /home/sonos_adhan.sh -adhan; cat /etc/crontabs/root | grep -v DELETEME-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
+			job="${pray:3:2} ${pray:0:2} * * * $command"
+			echo "$job" >> /etc/crontabs/root
 			#cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab
 			#create array message for push
 			message+=($i" "$pray)
 			
 			if [ $adhan_preannounce_minutes -gt 0 ] 
 				then
-					command="root /bin/bash /home/sonos_adhan.sh -preannounce; cat /etc/cron.d/azancron | grep -v DELETEMEPRE-${i,} > /etc/cron.d/azancron.temp; cat /etc/cron.d/azancron.temp > /etc/cron.d/azancron"
-					newTime=$(date --date "${pray:0:2}:${pray:3:4}:30 $(date +"%Z")  -$adhan_preannounce_minutes min")
-					newMin=$(date --date="$newTime" '+%M')
-					newHour=$(date --date="$newTime" '+%H')
-					prejob="$newMin $newHour * * * $command"
+					command="root /bin/bash /home/sonos_adhan.sh -preannounce; cat /etc/crontabs/root | grep -v DELETEMEPRE-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
+					newTime=$(dateadd "${pray:0:2}:${pray:3:4}" -"$adhan_preannounce_minutes"m)
+					prejob="${newTime:3:2} ${newTime:0:2} * * * $command"
 					
-					echo "$prejob" >> /etc/cron.d/azancron
+					echo "$prejob" >> /etc/crontabs/root
 					#cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$prejob") | crontab
 			fi
 			
@@ -59,7 +57,7 @@ function AdhanTimesShow() {
 
 #trigger at every midnight to refresh times.
 function refreshTimes(){
-	echo -e "BASH_ENV=/home/container.env\n\n0 0 * * * root /bin/bash /home/sonos_adhan.sh -install\n" > /etc/cron.d/azancron
+	echo -e "BASH_ENV=/home/container.env\n\n0 0 * * * root /bin/bash /home/sonos_adhan.sh -install\n" > /etc/crontabs/root
 	#(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install" ) | crontab
 }
 
