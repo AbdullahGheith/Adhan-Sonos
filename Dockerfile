@@ -1,4 +1,4 @@
-FROM node:erbium-alpine3.14
+FROM node:dubnium-alpine
 
 RUN apk update
 RUN apk upgrade
