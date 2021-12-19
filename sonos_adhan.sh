@@ -23,7 +23,7 @@ function AdhanTimes() {
 		do	
 			#get the times from api
 			pray=$(jq -r  '.data.timings.'$i <<< "${url}" ) 
-			command="root /bin/bash /home/sonos_adhan.sh -adhan; cat /etc/crontabs/root | grep -v DELETEME-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
+			command="/bin/bash /home/sonos_adhan.sh -adhan; cat /etc/crontabs/root | grep -v DELETEME-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
 			job="${pray:3:2} ${pray:0:2} * * * $command"
 			echo "$job" >> /etc/crontabs/root
 			#cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab
@@ -32,8 +32,8 @@ function AdhanTimes() {
 			
 			if [ $adhan_preannounce_minutes -gt 0 ] 
 				then
-					command="root /bin/bash /home/sonos_adhan.sh -preannounce; cat /etc/crontabs/root | grep -v DELETEMEPRE-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
-					newTime=$(dateadd "${pray:0:2}:${pray:3:4}" -"$adhan_preannounce_minutes"m)
+					command="/bin/bash /home/sonos_adhan.sh -preannounce; cat /etc/crontabs/root | grep -v DELETEMEPRE-${i,} > /etc/crontabs/root.temp; cat /etc/crontabs/root.temp > /etc/crontabs/root"
+					newTime=$(dateadd "${pray:0:2}:${pray:3:2}" -"$adhan_preannounce_minutes"m)
 					prejob="${newTime:3:2} ${newTime:0:2} * * * $command"
 					
 					echo "$prejob" >> /etc/crontabs/root
