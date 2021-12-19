@@ -1,11 +1,16 @@
-FROM node:lts
+FROM node:erbium-alpine3.14
 
-RUN apt-get -qq update
-RUN apt-get -qq install nano
-RUN apt-get -qq install git
-RUN apt-get -qq install jq
-RUN apt-get -qq install cron
-RUN apt-get -qq install python3-pip
+RUN apk update
+RUN apk upgrade
+RUN apk add --update bash && rm -rf /var/cache/apk/*
+RUN apk add tzdata
+RUN apk add nano 
+RUN apk add git
+RUN apk add jq
+RUN apk add curl
+RUN apk add dateutils
+RUN apk add python3
+RUN apk add py3-pip
 RUN pip3 install gTTS
 
 COPY sonos_adhan.sh sonos_adhan.cfg starter.sh initchromecast.sh /home/
@@ -23,9 +28,9 @@ WORKDIR /home/node-sonos-http-api
 RUN npm install --production
 RUN npm install http-server -g
 
-RUN touch /etc/cron.d/azancron
-RUN chmod 0644 /etc/cron.d/azancron
-RUN crontab /etc/cron.d/azancron
+RUN touch /etc/crontabs/azancron
+RUN chmod 0644 /etc/crontabs/azancron
+RUN crontab /etc/crontabs/azancron
 
 WORKDIR /home
 
