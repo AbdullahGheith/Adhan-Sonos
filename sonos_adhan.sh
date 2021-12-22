@@ -59,7 +59,7 @@ function AdhanTimesShow() {
 
 #trigger at every midnight to refresh times.
 function refreshTimes(){
-	echo -e "BASH_ENV=/home/container.env\n\n0 0 * * * root /bin/bash /home/sonos_adhan.sh -install\n" > /etc/crontabs/root
+	echo -e "BASH_ENV=/home/container.env\n\n0 0 * * * /bin/bash /home/sonos_adhan.sh -install\n" > /etc/crontabs/root
 	#(crontab -l ; echo "0 0 * * * /bin/bash /home/sonos_adhan.sh -install" ) | crontab
 }
 
