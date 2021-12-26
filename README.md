@@ -25,6 +25,7 @@ If you havent built it yourself, you can run it directly from [docker hub](https
 ```
 docker run -e pushover_notifications=true -e app_token=kjdnckndmvmfpmvfvmomfmfdm -e user_token=fpoofemoimoimvomdkrkedfd -e salah_notification_salah=false -e active=true -e city=breukelen -e country=nl -e method=3 -e language=en-us -e adhan_time_day=10:00 -e adhan_volume_day=30 -e adhan_time_night=22:00 -e adhan_volume_night=5 -e adhan_preannounce=false -e adhan_preannounce_text="It is time to pray" -e adhan_preannounce_minutes=10 --restart unless-stopped -it -d -p 5005:5005 xabdullahx/adhan-sonos
 ```
+**When using sonos, you have to use "--network host" on the container. The reason for that being, is that Sonos API has to be able to discover your sonos devices.**
 
 If you are building it yourself and are using the cfg file, you probably know how to run it:
 
