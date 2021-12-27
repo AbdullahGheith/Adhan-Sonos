@@ -84,7 +84,6 @@ function sonosSay(){
 		#replace space by url friendly space
 		adhan_preannounce_text_format=${1// /%20}
 		curl --silent --output /dev/null http://localhost:5005/sayall/"$adhan_preannounce_text_format"/"$language"/"$2"
-		curl --silent --output /dev/null --connect-timeout 560 http://localhost:5005/clipall/azan.mp3/"$2"
 	fi
 	
 }
