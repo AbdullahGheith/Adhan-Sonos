@@ -15,7 +15,7 @@ function AdhanPush() {
 #get prayer times based on location from config file via API aladhan.com
 function AdhanTimes() {
 
-	url=$(curl -s "http://api.aladhan.com/v1/timingsByCity?city=$city&country=$country&method=$method")
+	url=$(curl -s "http://api.aladhan.com/v1/timingsByCity?city=$city&country=$country&method=$method" -L)
 	#make a list of 5 prayes	
 	declare -a arr=("Fajr" "Dhuhr" "Asr" "Maghrib" "Isha")
 		#create a loop so each prayer gets a crontab
@@ -45,7 +45,7 @@ function AdhanTimes() {
 #get prayer times based on location from config file via API aladhan.com
 function AdhanTimesShow() {
 
-	url=$(curl -s "https://api.aladhan.com/v1/timingsByCity?city=$city&country=$country&method=$method")
+	url=$(curl -s "https://api.aladhan.com/v1/timingsByCity?city=$city&country=$country&method=$method" -L)
 	#make a list of 5 prayes	
 	declare -a arr=("Fajr" "Dhuhr" "Asr" "Maghrib" "Isha")
 		#create a loop so each prayer gets a crontab
